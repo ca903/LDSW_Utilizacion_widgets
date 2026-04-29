@@ -9,45 +9,58 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'LDSW Home Screen',
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('LDSW Utilización de widgets'),
-          backgroundColor: Colors.indigo,
-        ),
-        body: Column( // <--- WIDGET 1: COLUMN
+        // Usamos un Stack para poner elementos encima de la imagen de fondo
+        body: Stack(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text( // <--- WIDGET 2: TEXT
-                'Práctica de Widgets Básicos',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            // 1. IMAGEN DE FONDO
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop'), 
+                  fit: BoxFit.cover, // Para que cubra toda la pantalla
+                ),
               ),
             ),
-            Container( // <--- WIDGET 3: CONTAINER
-              margin: const EdgeInsets.all(15),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.amber[100],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.amber, width: 2),
-              ),
-              child: Row( // <--- WIDGET 4: ROW
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  Icon(Icons.star, color: Colors.orange),
-                  Text('Elemento Row 1'),
-                  Text('Elemento Row 2'),
+            // Capa oscura para que el texto se lea mejor
+            Container(color: Colors.black.withOpacity(0.5)),
+            
+            // 2. CONTENIDO CENTRAL
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // ICONO (Criterio de evaluación)
+                  const Icon(
+                    Icons.movie_filter, 
+                    size: 80, 
+                    color: Colors.white
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  // NOMBRE DE LA APP
+                  const Text(
+                    'MI CATÁLOGO APP',
+                    style: TextStyle(
+                      fontSize: 32, 
+                      fontWeight: FontWeight.bold, 
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  
+                  // MENSAJE DE BIENVENIDA / HELLO WORLD
+                  const Text(
+                    '¡Bienvenido! Hello World',
+                    style: TextStyle(
+                      fontSize: 18, 
+                      color: Colors.white70
+                    ),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 20),
-            Stack( // <--- WIDGET 5: STACK
-              alignment: Alignment.center,
-              children: [
-                Container(width: 150, height: 150, color: Colors.indigo[100]),
-                Container(width: 100, height: 100, color: Colors.indigo[300]),
-                const Text('Stack', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ],
             ),
           ],
         ),
