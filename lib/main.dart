@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(const MyApp());
 
@@ -9,61 +11,63 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'LDSW Home Screen',
+      title: 'LDSW Peticiones HTTP',
       home: Scaffold(
-        // Usamos un Stack para poner elementos encima de la imagen de fondo
-        body: Stack(
-          children: [
-            // 1. IMAGEN DE FONDO
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop'), 
-                  fit: BoxFit.cover, // Para que cubra toda la pantalla
-                ),
-              ),
-            ),
-            // Capa oscura para que el texto se lea mejor
-            Container(color: Colors.black.withOpacity(0.5)),
-            
-            // 2. CONTENIDO CENTRAL
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // ICONO (Criterio de evaluación)
-                  const Icon(
-                    Icons.movie_filter, 
-                    size: 80, 
-                    color: Colors.white
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // NOMBRE DE LA APP
-                  const Text(
-                    'MI CATÁLOGO APP',
-                    style: TextStyle(
-                      fontSize: 32, 
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  
-                  // MENSAJE DE BIENVENIDA / HELLO WORLD
-                  const Text(
-                    '¡Bienvenido! Hello World',
-                    style: TextStyle(
-                      fontSize: 18, 
-                      color: Colors.white70
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('LDSW Peticiones HTTP'),
+          backgroundColor: Colors.redAccent,
         ),
+        body: const PokemonCenter(),
+      ),
+    );
+  }
+}
+
+class PokemonCenter extends StatefulWidget {
+  const PokemonCenter({super.key});
+  @override
+  State<PokemonCenter> createState() => _PokemonCenterState();
+}
+
+class _PokemonCenterState extends State<PokemonCenter> {
+  String info = "Cargando datos...";
+  String img = "";
+
+  @override
+  void initState() {
+    super.initState();
+    pedirDatos();
+  }
+
+  Future<void> pedirDatos() async {
+    // PETICIÓN HTTP A POKEAPI
+    final res = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon/pikachu'));
+    if (res.statusCode == 200) {
+      final jsonRes = json.decode(res.body);
+      setState(() {
+        info = jsonRes['name'].toString().toUpperCase();
+        img = jsonRes['sprites']['front_default'];
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Resultado de consulta HTTP:', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 20),
+          if (img.isNotEmpty) Image.network(img, height: 180),
+          Text(info, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 40),
+          ElevatedButton(
+            onPressed: pedirDatos, 
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text("Actualizar desde API", style: TextStyle(color: Colors.white)),
+          )
+        ],
       ),
     );
   }
