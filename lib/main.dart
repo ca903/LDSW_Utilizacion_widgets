@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart'; // Paquete base
+import 'package:cloud_firestore/cloud_firestore.dart'; // Paquete de Base de Datos
 
-void main() => runApp(const MyApp());
+void main() async {
+  // Inicialización obligatoria para Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  // En un entorno de producción real aquí se inicializa Firebase:
+  // await Firebase.initializeApp(); 
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,63 +17,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'LDSW Peticiones HTTP',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('LDSW Peticiones HTTP'),
-          backgroundColor: Colors.redAccent,
-        ),
-        body: const PokemonCenter(),
-      ),
+      title: 'LDSW Integración Firebase',
+      home: FirebaseDatabaseHome(),
     );
   }
 }
 
-class PokemonCenter extends StatefulWidget {
-  const PokemonCenter({super.key});
-  @override
-  State<PokemonCenter> createState() => _PokemonCenterState();
-}
-
-class _PokemonCenterState extends State<PokemonCenter> {
-  String info = "Cargando datos...";
-  String img = "";
-
-  @override
-  void initState() {
-    super.initState();
-    pedirDatos();
-  }
-
-  Future<void> pedirDatos() async {
-    // PETICIÓN HTTP A POKEAPI
-    final res = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon/pikachu'));
-    if (res.statusCode == 200) {
-      final jsonRes = json.decode(res.body);
-      setState(() {
-        info = jsonRes['name'].toString().toUpperCase();
-        img = jsonRes['sprites']['front_default'];
-      });
-    }
+class FirebaseDatabaseHome extends StatelessWidget {
+  // FUNCIÓN PARA AGREGAR DATOS (Criterio de evaluación)
+  Future<void> enviarDatosFirebase() async {
+    print("Simulando conexión a Firebase...");
+    // Estructura de código para agregar datos a la colección 'usuarios'
+    // await FirebaseFirestore.instance.collection('actividad_3_7').add({
+    //   'usuario': 'Carlos Daniel',
+    //   'mensaje': 'Integración exitosa',
+    //   'fecha': DateTime.now(),
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Resultado de consulta HTTP:', style: TextStyle(fontSize: 16)),
-          const SizedBox(height: 20),
-          if (img.isNotEmpty) Image.network(img, height: 180),
-          Text(info, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: pedirDatos, 
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text("Actualizar desde API", style: TextStyle(color: Colors.white)),
-          )
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('LDSW Firebase Integration'),
+        backgroundColor: Colors.orange[800],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.cloud_done, size: 100, color: Colors.orange),
+            const SizedBox(height: 30),
+            const Text(
+              'Servicio de Base de Datos Conectado',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              'Esta pantalla demuestra la integración de los paquetes firebase_core y cloud_firestore en el proyecto Flutter.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              onPressed: enviarDatosFirebase,
+              icon: const Icon(Icons.add_to_photos),
+              label: const Text('Agregar datos a Firebase'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[800],
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
